@@ -1,0 +1,67 @@
+<?php
+
+use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\file\Entity\File;
+use Drupal\media\MediaInterface;
+use Drupal\Core\Template\Attribute;
+
+/**
+ * Implements hook_theme().
+ */
+function islandora_oral_histories_theme() {
+  return [
+      'oral_histories_transcript_block' => [
+        'template' => 'oral-histories-transcript-block',
+        'variables' => [
+          'transcript_content' => NULL,
+        ]
+      ],
+      'oral_histories_transcript_text_block' => [
+        'template' => 'oral-histories-transcript-text-block',
+        'variables' => [
+          'transcript_text_content' => NULL,
+        ]
+      ]
+  ];
+}
+
+/**
+ * Implements hook_media_insert().
+ */
+function islandora_oral_histories_media_insert(MediaInterface $media) {
+  if ($media->bundle() != 'file') {
+    return;
+  }
+  // If media use is "Transcript" then we want to trigger the reindexing of the parent.
+  if ($media->hasField('field_media_use')) {
+    $hasTranscript = FALSE;
+    foreach ($media->get('field_media_use')->referencedEntities() as $media_use_term) {
+      $hasTranscript = $hasTranscript | ($media_use_term->label() == "Transcript");
+    }
+
+    if ($hasTranscript) {
+      \Drupal::service('islandora_oral_histories.search_reindexer')->reindexParent($media);
+    }
+  }
+}
+
+/**
+ * Implements hook_media_update().
+ */
+function islandora_oral_histories_media_update(MediaInterface $media) {
+  if ($media->bundle() != 'file') {
+    return;
+  }
+  // If media use is "Transcript" then we want to trigger the reindexing of the parent.
+  if ($media->hasField('field_media_use')) {
+    $hasTranscript = FALSE;
+    foreach ($media->get('field_media_use')->referencedEntities() as $media_use_term) {
+      $hasTranscript = $hasTranscript | ($media_use_term->label() == "Transcript");
+    }
+
+    if ($hasTranscript) {
+      \Drupal::service('islandora_oral_histories.search_reindexer')->reindexParent($media);
+    }
+  }
+}

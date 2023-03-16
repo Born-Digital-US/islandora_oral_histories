@@ -1,0 +1,7 @@
+services:
+  logger.channel.islandora_oral_histories:
+      parent: logger.channel_base
+      arguments: ['islandora_text_extraction']
+  islandora_oral_histories.search_reindexer:
+    class: Drupal\islandora_oral_histories\SearchReindexer
+    arguments: ['@islandora.utils', '@logger.channel.islandora_oral_histories']

@@ -1,0 +1,10 @@
+islandora_oral_histories.interact:
+  version: VERSION
+  css:
+    theme:
+      css/islandora_oral_histories.css: {}
+  js:
+    js/islandora_oral_histories.js: {}
+  dependencies:
+    - core/jquery
+    - core/drupal

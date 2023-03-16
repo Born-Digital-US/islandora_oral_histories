@@ -1,0 +1,61 @@
+button.btn-default {
+  padding:6px 12px;
+  font-size:16px;
+  line-height:24px;
+  border-radius:4px;
+  background-color:#004f6f;
+  color:#ffffff;
+  border-color:#286090;
+}
+.tcu-info {
+  float:left;
+  width:200px;
+}
+.play-button {
+  float:left;
+  margin-right:-100px;
+}
+.speaker-name {
+  float:right;
+  width:100px;
+}
+.speaker-tiers {
+  margin-left:200px;
+}
+.scroller .playing {
+  background-color:#6cf;
+}
+.scroller ul {
+  list-style:none;
+}
+.scroller ul {
+  list-style:none;
+}
+.transcript-container{
+  height:500px;
+  overflow-x:auto;
+  transition:all 100ms ease 0s;
+}
+button.play-tcu {
+  background-color: rgb(0, 79, 111);
+}
+button.play-tcu:hover, button.play-tcu:active {
+  background-color: rgb(0, 109, 151);
+}
+.playing {
+  background-color:#6cf !important;
+}
+.dropdown-choices ul {
+  list-style: none;
+  line-height: 2.5em;
+  margin-top: 0.75em;
+  padding-right: 1.5em;
+}
+.dropdown-choices {
+  position: absolute;
+  top: 2.4em;
+  display:none;
+  z-index: 100;
+  background: white;
+  border: 1px solid #bbb;
+}

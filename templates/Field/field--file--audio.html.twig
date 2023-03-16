@@ -1,0 +1,31 @@
+{#
+/**
+* @file
+* Default theme implementation to display the file entity as a audio tag.
+*
+* Available variables:
+* - attributes: An array of HTML attributes, intended to be added to the
+*   audio tag.
+* - files: And array of files to be added as sources for the audio tag. Each
+*   element is an array with the following elements:
+*   - file: The full file object.
+*   - source_attributes: An array of HTML attributes for to be added to the
+*     source tag.
+* - caption: the captions file
+* - poster: the poster (thumbnail) file
+*
+* @ingroup themeable
+*/
+#}
+{% if poster %}
+  <audio controls="controls" width="100%" poster="{{ poster }}" crossorigin="anonymous">
+{% else %}
+  <audio controls="controls" width="100%" crossorigin="anonymous">
+{% endif %}
+  {% for file in files %}
+    <source {{ file.source_attributes }} />
+  {% endfor %}
+  {% if caption %}
+    <track src="{{ caption }}" kind="captions" crossorigin="anonymous">
+  {% endif %}
+</audio>
