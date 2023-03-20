@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\bd_core\Plugin\Field\FieldFormatter;
+namespace Drupal\islandora_oral_histories\Plugin\Field\FieldFormatter;
 
 use Drupal\file\Plugin\Field\FieldFormatter\FileVideoFormatter;
 use Drupal\Core\Field\FieldItemListInterface;
