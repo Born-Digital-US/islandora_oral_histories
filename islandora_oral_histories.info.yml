@@ -4,3 +4,5 @@ description: 'Oral Histories Functionality for Islandora 2.0+.'
 core: 8.x
 core_version_requirement: ^8 || ^9
 package: 'Custom'
+dependencies:
+ - drupal:islandora

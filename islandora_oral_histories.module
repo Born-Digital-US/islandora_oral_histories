@@ -11,19 +11,88 @@ use Drupal\Core\Template\Attribute;
  */
 function islandora_oral_histories_theme() {
   return [
-      'oral_histories_transcript_block' => [
-        'template' => 'oral-histories-transcript-block',
-        'variables' => [
-          'transcript_content' => NULL,
-        ]
-      ],
-      'oral_histories_transcript_text_block' => [
-        'template' => 'oral-histories-transcript-text-block',
-        'variables' => [
-          'transcript_text_content' => NULL,
-        ]
+    'file_video_with_caption' => [
+      'template' => 'file-video-caption',
+      'variables' => [
+        'caption' => NULL,
+        'files' => [],
+        'poster' => NULL,
+        'attributes' => NULL
       ]
+    ],
+    'file_audio_with_caption' => [
+      'template' => 'file-audio-caption',
+      'variables' => [
+        'caption' => NULL,
+        'files' => [],
+        'attributes' => NULL
+      ]
+    ],
+    'oral_histories_transcript_block' => [
+      'template' => 'oral-histories-transcript-block',
+      'variables' => [
+        'transcript_content' => NULL,
+      ]
+    ],
+    'oral_histories_transcript_text_block' => [
+      'template' => 'oral-histories-transcript-text-block',
+      'variables' => [
+        'transcript_text_content' => NULL,
+      ]
+    ]
   ];
+}
+
+/**
+ * Implements hook_ENTITY_ID_presave().
+ *
+ * Populates field_captions_text with text extracted from the file in field_captions.
+ * Previous contents of field_captions_text is always overwritten. If there is no file,
+ * then field_captions_text is set to an empty string.
+ */
+function islandora_oral_histories_media_presave(Drupal\Core\Entity\EntityInterface $media) {
+  if($media->hasField('field_captions') && $media->hasField('field_captions_text')) {
+    $captions_files = $media->field_captions->referencedEntities();
+    /** @var Drupal\file\Entity\File $captions_file */
+    $output = [];
+    foreach($captions_files as $captions_file) {
+      $uri = $captions_file->getFileUri();
+      if($uri) {
+        $mimetype = $captions_file->getMimeType();
+        switch ($mimetype) {
+          case 'text/vtt':
+          case 'application/octet-stream':
+          case 'application/x-subrip':
+            $contents = file_get_contents($uri);
+            if ($contents) {
+              // Adapted from https://stackoverflow.com/a/45633211/15291506
+              $vtt_pattern = '/(?m)^((\d{2}:)?\d{2}:\d{2}[\.,]\d+) +--> +((\d{2}:)?\d{2}:\d{2}[\.,]\d+).*[\r\n]+\s*(?s)(?<text>(?:(?!\r?\n\r?\n).)*)/';
+              $result = preg_match_all($vtt_pattern, $contents, $matches);
+              if ($result && !empty($matches['text'])) {
+                $output[] = implode(" ", $matches['text']);
+              }
+            }
+            break;
+          case 'text/xml':
+          case 'application/xml':
+            $xml = simplexml_load_file($uri);
+            // @todo: I have no idea what standard this comes from. It works with the xml sample provided (the actual xpath is `/cues/cue/transcript`),
+            // @todo: but there are an alphabet soup of xml video captions formats. Hopefully, they'll stick with this one!
+            foreach($xml->xpath('//transcript') as $transcription) {
+              $output[] = $transcription->__toString();
+            }
+            break;
+          default:
+            $contents = file_get_contents($uri);
+            if ($contents) {
+              $output[] = $contents;
+            }
+            break;
+        }
+      }
+    }
+    $media->field_captions_text->value = implode(" ", $output);
+  }
 }
 
 /**
@@ -62,6 +131,43 @@ function islandora_oral_histories_media_update(MediaInterface $media) {
 
     if ($hasTranscript) {
       \Drupal::service('islandora_oral_histories.search_reindexer')->reindexParent($media);
+    }
+  }
+}
+
+/**
+ * Implements hook_entity_extra_field_info
+ * Defines Permalink field
+ * @return array
+ */
+function islandora_oral_histories_entity_extra_field_info() {
+  $extra_field['node']['islandora_object']['display']['oral_history_tabs'] = [
+    'label' => t('Oral Histories Tabs'),
+    'description' => t('Loads Oral Histories quicktabs to display transcript blocks + Item Information'),
+    'weight' => 100,
+    'visible' => TRUE,
+  ];
+  return $extra_field; 
+}
+
+/**
+ * Implements hook_entity_view().
+ */
+function islandora_oral_histories_entity_view(array &$build, EntityInterface $entity, EntityViewDisplayInterface $display, $view_mode) {
+  $ocrExist = FALSE;
+  $route_match_item = \Drupal::routeMatch()->getParameters()->get($entity->getEntityTypeId());
+  $node = \Drupal::routeMatch()->getParameter('node');
+  if ($node instanceof \Drupal\node\NodeInterface) {
+    $nodeId = $node->id();
+    $url_alias = \Drupal::service('path_alias.manager')->getAliasByPath('/node/'. $nodeId);
+  } else {
+  }
+
+  // Ensure the entity matches the route.
+  if ($entity === $route_match_item && $display->getComponent('oral_history_tabs')) {
+    $ohq_block = \Drupal::service('plugin.manager.block')->createInstance('quicktabs_block:oral_history_quicktabs');
+    if (is_object($ohq_block)) {
+      $build['oral_history_tabs'] = $ohq_block->build();
     }
   }
 }

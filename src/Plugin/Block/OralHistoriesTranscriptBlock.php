@@ -111,17 +111,18 @@ class OralHistoriesTranscriptBlock extends BlockBase implements ContainerFactory
         $node = $this->entityTypeManager->getStorage('node')->load($nid);
       }
     }
+    \Drupal::logger('islandora_oral_histories')->info("build with nid = " . $node->id());    
     // The variable will be populated if there is a transcript.
     $transcript_sections = [];
     $user_roles = $this->currentUser->getRoles();
 
-    $user_roles = $this->currentUser->getRoles();
-
     $transcript_term = $this->islandoraUtils->getTermForUri('http://pcdm.org/use#Transcript');
+    \Drupal::logger('islandora_oral_histories')->info("build with transcript_term = " . $transcript_term->id());    
     $transcriptMedia = $this->entityTypeManager->getStorage('media')->loadByProperties([
       'field_media_use' => ['target_id' => $transcript_term->id()],
       'field_media_of' => ['target_id' => $nid],
     ]);
+    // \Drupal::logger('islandora_oral_histories')->info("build with transcriptMedia = " . $transcriptMedia->id());    
     if (count($transcriptMedia) > 0) {
       $transcriptMedia = reset($transcriptMedia);
       if ($transcriptMedia && $transcriptMedia->bundle() == 'file') {      
@@ -129,6 +130,7 @@ class OralHistoriesTranscriptBlock extends BlockBase implements ContainerFactory
         $target_id = $media_file->id();
         $transcript = File::load($target_id);
         $file_uri = $transcript->getFileUri();
+        \Drupal::logger('islandora_oral_histories')->info("build with file_uri = " . $file_uri);    
         $drupal_file_uri = $file_uri; // str_replace("fedora://", \Drupal::request()->getSchemeAndHttpHost() . "/_flysystem/fedora/", $file_uri);
         $file_contents = file_get_contents($drupal_file_uri);
         $transcript_sections = $this->_parse_transcript_file($file_contents, $drupal_file_uri);
@@ -201,6 +203,7 @@ class OralHistoriesTranscriptBlock extends BlockBase implements ContainerFactory
       //  00:00:04.600 --> 00:00:06.850
       //  Hi everyone. My name's Becca Baader and I'm
       //
+      $start = $end = 0;
       $lines = explode("\n", $file_contents);
       $transcript_lines = [];
       $skipnext = FALSE;
