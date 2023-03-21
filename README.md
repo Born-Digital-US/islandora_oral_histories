@@ -4,7 +4,7 @@ Oral Histories Functionality for Islandora 2.0+
 ### Install and configuration
 Install and enable this module as you would for any other Drupal module. Incorporating this into the site's composer.json is outside the scope of this document.
 
-The module will provide several field formatters and all of the module code with some javascript and CSS to parse a transcript and several configurations. NOTE: the configurations that are included are the only ones that do not possibly interefere with a potential core or common configuration, so some manual configuration will be needed.
+The module will provide several field formatters and all of the module code with some javascript and CSS to parse a transcript. A subsequent version of this module will include minimal configurations, but it will have to be a manual process to configure the dependencies for content to use the features of this module.
 
 ##### Manual configurations
 The srt, vtt or txt format of a time-based transcript is stored as a File media related to the audio or video item.  This uses the "Transcript" media use. 
@@ -28,6 +28,6 @@ The "Oral Histories" display mode will need to be configured to display the prev
 
 
 ##### Usage
-Of course, none of this would work unless an audio or video file has a Transcript media Media at least. Oral History objects must use the Model = "video" and Type = "Moving Image" -- and must have srt (xml), vtt, or text file media which is set to Media Use = "Transcript".
+Of course, none of this would work unless an audio or video file has a Transcript media at least. Oral History objects must use the Model = "video" and Type = "Moving Image" -- and must have srt (xml), vtt, or text file media which is set to Media Use = "Transcript".
   
 ![image](https://user-images.githubusercontent.com/19391126/226374188-a748864f-bc69-4e79-a566-7b39b161762d.png)
