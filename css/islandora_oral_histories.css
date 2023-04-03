@@ -3,9 +3,6 @@ button.btn-default {
   font-size:16px;
   line-height:24px;
   border-radius:4px;
-  background-color:#004f6f;
-  color:#ffffff;
-  border-color:#286090;
 }
 .tcu-info {
   float:left;
@@ -22,9 +19,6 @@ button.btn-default {
 .speaker-tiers {
   margin-left:200px;
 }
-.scroller .playing {
-  background-color:#6cf;
-}
 .scroller ul {
   list-style:none;
 }
@@ -35,15 +29,6 @@ button.btn-default {
   height:500px;
   overflow-x:auto;
   transition:all 100ms ease 0s;
-}
-button.play-tcu {
-  background-color: rgb(0, 79, 111);
-}
-button.play-tcu:hover, button.play-tcu:active {
-  background-color: rgb(0, 109, 151);
-}
-.playing {
-  background-color:#6cf !important;
 }
 .dropdown-choices ul {
   list-style: none;
@@ -56,6 +41,5 @@ button.play-tcu:hover, button.play-tcu:active {
   top: 2.4em;
   display:none;
   z-index: 100;
-  background: white;
   border: 1px solid #bbb;
 }
