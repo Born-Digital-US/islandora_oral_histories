@@ -17,7 +17,7 @@ A new display mode called "Oral Histories" will need to be added and a correspon
 
 ![image](https://user-images.githubusercontent.com/19391126/226608409-ea63ad4b-4cd9-4f69-ae42-921281d16777.png)
 
-For the "Oral Histories" display of the transcript, a Quicktabs called "Oral History Quicktabs" is used to configure the display of the transcript as well as the Islandora metadata. 
+For the "Oral Histories" display of the transcript, a Quicktabs called "Oral History Quicktabs" is used to configure the display of the transcript as well as the Islandora metadata.  The code references the machine name of "oral_history_quicktabs", so be sure that the name matches.
 
 The "Oral Histories" display mode will need to be configured to display the previously mentioned "Oral History Quicktabs" as well as the Media EVA for the player.
 
