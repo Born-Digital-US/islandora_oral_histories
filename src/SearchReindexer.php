@@ -43,7 +43,7 @@ class SearchReindexer {
   /**
    * Reindexes parent node for a media. No-op if parent does not exist.
    *
-   * @param Drupal\media\MediaInterface $media
+   * @param \Drupal\media\MediaInterface $media
    *   Media whose parent you want to reindex.
    */
   public function reindexParent(MediaInterface $media) {
