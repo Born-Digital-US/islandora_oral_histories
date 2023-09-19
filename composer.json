@@ -1,0 +1,18 @@
+{
+  "name": "born-digital-us/islandora_oral_histories",
+  "description": "Islandora Oral Histories",
+  "type": "drupal-module",
+  "keywords": ["Drupal", "Islandora"],
+  "license": "GPL-2.0+",
+  "homepage": "https://github.com/Born-Digital-US/islandora_oral_histories",
+  "support": {
+    "issues": "https://github.com/Born-Digital-US/islandora_oral_histories/issues"
+  },
+  "authors": [
+    {
+      "name": "Willow Gillingham",
+      "email": "willow@born-digital.com",
+      "role": "Maintainer"
+    }
+  ]
+}
