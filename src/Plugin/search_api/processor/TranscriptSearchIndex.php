@@ -110,6 +110,7 @@ class TranscriptSearchIndex extends ProcessorPluginBase {
    */
   function _parse_transcript_file($file_contents, $drupal_file_uri = '') {
     $transcript_sections = [];
+    $start = $end = $speaker = NULL;
     if (strstr($drupal_file_uri, ".xml")) {
       // XML file -- simple, load the file as simplexml and take appropriate 'cue' section.
       $xml = simplexml_load_string($file_contents, "SimpleXMLElement", LIBXML_NOCDATA);
