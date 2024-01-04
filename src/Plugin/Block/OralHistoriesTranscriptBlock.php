@@ -154,7 +154,7 @@ class OralHistoriesTranscriptBlock extends BlockBase implements ContainerFactory
             // get the uri that points to this media's field_captions file and pass
             // this into the same parsing function as above. 
             $drupal_file_uri = \Drupal::request()->getSchemeAndHttpHost() . $av_Media->get('field_captions')->entity->createFileUrl();
-            $file_contents = file_get_contents($drupal_file_uri);
+            $file_contents = file_get_contents($drupal_file_uri, false);
             $transcript_sections = $this->_parse_transcript_file($file_contents, $drupal_file_uri);
           }
         }
@@ -257,16 +257,18 @@ class OralHistoriesTranscriptBlock extends BlockBase implements ContainerFactory
       }
     }
     // Finished with the loop -- add the values from the final section if still need to be added.
-    if (count($transcript_lines) > 0) {
+    if (isset($transcript_lines) && !empty($transcript_lines)) {
       $transcript_sections[] = [
         'start' => $start, 'end' => $end, 'speaker' => $speaker, 'transcript' => implode("\n", $transcript_lines)
       ];
     }
     // Finally iterate in order to convert the time to a human-readable format.
     foreach ($transcript_sections as $key => $transcript_section) {
-      $seconds = array_key_exists('start', $transcript_section) ? $transcript_section['start'] : 0;
+      $seconds = array_key_exists('start', $transcript_section) ? floor($transcript_section['start']) : 0;
+      $transcript_sections[$key]['start'] = $seconds;
       $transcript_sections[$key]["start_h"] = $this->_seconds_to_time($seconds);
-      $seconds = array_key_exists('end', $transcript_section) ? $transcript_section['end'] : 0;
+      $seconds = array_key_exists('end', $transcript_section) ? floor($transcript_section['end']) : 0;
+      $transcript_sections[$key]['end'] = $seconds;
       $transcript_sections[$key]["end_h"] = $this->_seconds_to_time($seconds);
     }
     return $transcript_sections;   
