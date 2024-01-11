@@ -21,14 +21,12 @@
         if (media) {
           media.ontimeupdate = function() {
             var play_time = Math.trunc(media.currentTime);
-            if (play_time < 10) {
-              play_time = "0" + play_time;
-            }
             if (playing_time !== play_time) {
               var time_li = $('[data-start="' + play_time + '"]');
               if (time_li.length) {
                 $(".transcript-container ul li").removeClass('playing');
                 time_li.addClass('playing');
+                time_li.get(0).scrollIntoView();
                 playing_time = play_time;
                 //  @todo Need to set this variable: last_button_id.
                 var button = time_li.find('button.play-tcu');
@@ -54,10 +52,6 @@
           var play_li_id = play_li[0].id;
           play_li_id = play_li_id.replace('li_', '');
           var li_selector = '.transcript-container ul li:nth-child(' + play_li_id + ')';
-          var ul = $('.transcript-container ul');
-          $('.transcript-container ul').animate({
-            scrollTop:$(li_selector).position().top
-          }, 500)
         });
         // Previous line play button.
         $('button.previous').once().click(function() {
