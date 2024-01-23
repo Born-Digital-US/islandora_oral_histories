@@ -148,7 +148,8 @@ class OralHistoriesTranscriptBlock extends BlockBase implements ContainerFactory
         if (count($av_Media) > 0) {
           $av_Media = reset($av_Media);
         }
-        if (count($av_media) > 0 && $av_Media->hasField('field_captions')) {
+        // $av_Media is either an empty array or an object.
+        if (!empty($av_Media) && $av_Media->hasField('field_captions')) {
           $field_captions = $av_Media->get('field_captions');
           if (!is_null($av_Media->get('field_captions')->entity)) {
             // get the uri that points to this media's field_captions file and pass
