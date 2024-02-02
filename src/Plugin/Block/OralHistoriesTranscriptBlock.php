@@ -174,6 +174,14 @@ class OralHistoriesTranscriptBlock extends BlockBase implements ContainerFactory
           ],
         ],
       ];
+      // Determine if there's any ['speaker'] values in the transcript_sections array.
+      $return['#has_speakers'] = FALSE;
+      foreach ($transcript_sections as $transcript_section) {
+        if (array_key_exists('speaker', $transcript_section) && !empty($transcript_section['speaker'])) {
+          $return['#has_speakers'] = TRUE;
+          break;
+        }
+      }
     }
     return $return;
   }

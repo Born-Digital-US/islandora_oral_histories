@@ -32,6 +32,7 @@ function islandora_oral_histories_theme() {
       'template' => 'oral-histories-transcript-block',
       'variables' => [
         'transcript_content' => NULL,
+        'has_speakers' => FALSE,
       ]
     ],
     'oral_histories_transcript_text_block' => [

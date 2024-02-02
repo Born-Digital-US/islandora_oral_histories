@@ -1,23 +1,25 @@
 <h5>Transcript</h5>
 {% set lastspeaker = "" %}
 <div class="tier-selector-processed navigation-processed">
-  <div class="btn-group show-tick tier-selector">
-    <button type="button" class="btn dropdown-toggle form-control selectpicker btn-default" title="Transcript, Speaker">
-      <span class="filter-option pull-left">Transcript, Speaker</span>&nbsp;
-      <span class="caret"></span>
-    </button>
-    <div class="open dropdown-choices">
-      <ul class="inner selectpicker" role="menu">
-        <li data-optgroup="1">
-          <a class="opt show-transcript" title="Transcript">Transcript &nbsp;<i class="fa fa-check check-mark"></i></a>
-        </li>
-        <li class="divider" data-optgroup="2div"></li>
-        <li>
-          <a class="opt show-speaker" title="Toggle speaker names on/off">Speaker &nbsp;<i class="fa fa-check check-mark"></i></a>
-        </li>
-      </ul>
-    </div>
-  </div>  
+  {% if has_speakers is not empty %}
+    <div class="btn-group show-tick tier-selector">
+      <button type="button" class="btn dropdown-toggle form-control selectpicker btn-default" title="Transcript, Speaker">
+        <span class="filter-option pull-left">Transcript, Speaker</span>&nbsp;
+        <span class="caret"></span>
+      </button>
+      <div class="open dropdown-choices">
+        <ul class="inner selectpicker" role="menu">
+          <li data-optgroup="1">
+            <a class="opt show-transcript" title="Transcript">Transcript &nbsp;<i class="fa fa-check check-mark"></i></a>
+          </li>
+          <li class="divider" data-optgroup="2div"></li>
+          <li>
+            <a class="opt show-speaker" title="Toggle speaker names on/off">Speaker &nbsp;<i class="fa fa-check check-mark"></i></a>
+          </li>
+        </ul>
+      </div>
+    </div>  
+  {% endif %}
   <div class="btn-group" role="group">
     <button type="button" class="btn btn-default previous" title="Previous line">
       <i class="fa fa-arrow-left"></i> Prev
@@ -40,7 +42,7 @@
               <i class="fa fa-play"></i> <small>{{ item.start_h }}</small>
             </button>
           </div>
-          {% if item.speaker %}
+          {% if item.speaker is not empty and has_speakers is not empty %}
           <div class="speaker-name {% if item.speaker == lastspeaker %}same{% endif %}{% if item.speaker != lastspeaker %}new{% endif %}-speaker">
             <span data-speaker-display="or_speaker" class="speaker-display active">{{ item.speaker }}</span> 
           </div>

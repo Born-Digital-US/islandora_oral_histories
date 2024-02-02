@@ -6,7 +6,7 @@ button.btn-default {
 }
 .tcu-info {
   float:left;
-  width:200px;
+  width:100px;
 }
 .play-button {
   float:left;
@@ -15,9 +15,6 @@ button.btn-default {
 .speaker-name {
   float:right;
   width:100px;
-}
-.speaker-tiers {
-  margin-left:200px;
 }
 .scroller ul {
   list-style:none;
