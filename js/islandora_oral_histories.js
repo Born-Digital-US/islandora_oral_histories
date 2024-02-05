@@ -24,10 +24,17 @@
             if (playing_time !== play_time) {
               var time_li = $('[data-start="' + play_time + '"]');
               if (time_li.length) {
+                playing_time = play_time;
+
+                //  Highlight the row.
                 $(".transcript-container ul li").removeClass('playing');
                 time_li.addClass('playing');
-                time_li.get(0).scrollIntoView();
-                playing_time = play_time;
+
+                // Scroll to the current line.
+                var index = time_li[0].id.split('_')[1];
+                var buttonHeight = time_li.outerHeight(true);
+                $(".scrolling-transcript-processed").scrollTop(index * buttonHeight);
+
                 //  @todo Need to set this variable: last_button_id.
                 var button = time_li.find('button.play-tcu');
                 if (button.length) {
