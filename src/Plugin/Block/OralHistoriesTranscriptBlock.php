@@ -198,7 +198,7 @@ class OralHistoriesTranscriptBlock extends BlockBase implements ContainerFactory
       $xml = simplexml_load_string($file_contents, "SimpleXMLElement", LIBXML_NOCDATA);
       $json = json_encode($xml);
       $transript_as_array = json_decode($json,TRUE);
-      $transcript_sections = (array_key_exists('cue', $transript_as_array) ? $transript_as_array['cue'] : []);
+      $transcript_sections = (is_array($transript_as_array) && array_key_exists('cue', $transript_as_array) ? $transript_as_array['cue'] : []);
     }
     elseif (strstr($drupal_file_uri, ".vtt")) {
       // split apart at empty lines -- these are the sections then, iterate and each 

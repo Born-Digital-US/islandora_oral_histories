@@ -2,7 +2,7 @@
  * @file - islandora_oral_histories.js
  */
 
- (function ($) {
+ (function ($, Drupal, once) {
 
     Drupal.behaviors.islandora_oral_histories = {
       attach: function (context, settings) {
@@ -45,7 +45,7 @@
           };        
         }
         // Each section's play button.
-        $('button.play-tcu').once().click(function() {
+        $(once('islandora_oral_histories-play', 'button.play-tcu')).click(function() {
           playing_time = 0;
           var self_id = this.id;
           last_button_id = self_id;
@@ -61,7 +61,7 @@
           var li_selector = '.transcript-container ul li:nth-child(' + play_li_id + ')';
         });
         // Previous line play button.
-        $('button.previous').once().click(function() {
+        $(once('islandora_oral_histories-previous', 'button.previous')).click(function() {
           if (last_button_id) {
             playing_time = 0;
             var prev_button = $("#" + last_button_id).parent('div').parent('div').parent('li').prev('li').find('button.play-tcu');
@@ -76,7 +76,7 @@
           }
         });
         // Next line play button.
-        $('button.next').once().click(function() {
+        $(once('islandora_oral_histories-next', 'button.next')).click(function() {
           if (last_button_id) {
             playing_time = 0;
             var next_button = $("#" + last_button_id).parent('div').parent('div').parent('li').next('li').find('button.play-tcu');
@@ -91,7 +91,7 @@
           }
         });
         // Repeat same line button.
-        $('button.sameagain').once().click(function() {
+        $(once('islandora_oral_histories-same', 'button.sameagain')).click(function() {
           if (last_from_to) {
             playing_time = 0;
             media.currentTime = last_from_to[0];
@@ -99,7 +99,7 @@
           }
         });
         // Dropdown click.
-        $('button.dropdown-toggle').once().click(function() {
+        $(once('islandora_oral_histories-dropdown', 'button.dropdown-toggle')).click(function() {
           // $(this).val() will work here
           var showing = ($('div.tier-selector-processed .dropdown-choices').css('display') !== "none");
           console.log(showing);
@@ -111,7 +111,7 @@
           }
         });      
         // Show/hide transcript click.
-        $('.show-transcript').once().click(function() {
+        $(once('islandora_oral_histories-transcript', '.show-transcript')).click(function() {
           var checked = $(".show-transcript i").hasClass('fa-check');
           if (checked) {
             $(".show-transcript i").removeClass('fa-check');
@@ -125,7 +125,7 @@
         });
 
         // Show/hide speaker names click.
-        $('.show-speaker').once().click(function() {
+        $(once('islandora_oral_histories-speaker', '.show-speaker')).click(function() {
           var checked = $(".show-speaker i").hasClass('fa-check');
           if (checked) {
             $(".show-speaker i").removeClass('fa-check');
@@ -139,4 +139,4 @@
         });
       }
     }
-  })(jQuery, Drupal);
+  })(jQuery, Drupal, once);
