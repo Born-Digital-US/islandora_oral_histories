@@ -6,5 +6,6 @@ islandora_oral_histories.interact:
   js:
     js/islandora_oral_histories.js: {}
   dependencies:
-    - core/jquery
     - core/drupal
+    - core/jquery
+    - core/once
