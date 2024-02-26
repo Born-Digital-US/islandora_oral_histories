@@ -304,9 +304,9 @@ class OralHistoriesTranscriptBlock extends BlockBase implements ContainerFactory
   function _seconds_to_time($seconds) {
     $secs = $seconds % 60;
     $hrs = $seconds / 60;
-    $mins = $hrs % 60;
+    $mins = (int)$hrs % 60;
     $hrs = $hrs / 60;
-    return ($hrs ? (int)$hrs . ':' : '') . (($mins > 9) ? (int)$mins : '0' . (int)$mins) .
+    return ($hrs ? (int)$hrs . ':' : '') . (($mins > 9) ? $mins : '0' . $mins) .
       ":" . (($secs > 9) ? (int)$secs : '0' . $secs);
   }
   
