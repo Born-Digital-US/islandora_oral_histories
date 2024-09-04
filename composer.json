@@ -1,5 +1,5 @@
 {
-  "name": "born-digital-us/islandora_oral_histories",
+  "name": "born-digital/islandora_oral_histories",
   "description": "Islandora Oral Histories",
   "type": "drupal-module",
   "keywords": ["Drupal", "Islandora"],
@@ -10,8 +10,8 @@
   },
   "authors": [
     {
-      "name": "Willow Gillingham",
-      "email": "willow@born-digital.com",
+      "name": "Daniel Lamb",
+      "email": "daniel@born-digital.com",
       "role": "Maintainer"
     }
   ]
