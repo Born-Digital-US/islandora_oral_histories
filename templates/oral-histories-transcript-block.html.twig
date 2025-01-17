@@ -18,7 +18,7 @@
           </li>
         </ul>
       </div>
-    </div>  
+    </div>
   {% endif %}
   <div class="btn-group" role="group">
     <button type="button" class="btn btn-default previous" title="Previous line">
@@ -44,13 +44,13 @@
           </div>
           {% if item.speaker is not empty and has_speakers is not empty %}
           <div class="speaker-name {% if item.speaker == lastspeaker %}same{% endif %}{% if item.speaker != lastspeaker %}new{% endif %}-speaker">
-            <span data-speaker-display="or_speaker" class="speaker-display active">{{ item.speaker }}</span> 
+            <span data-speaker-display="or_speaker" class="speaker-display active">{{ item.speaker }}</span>
           </div>
             {% set lastspeaker = item.speaker %}
           {% endif %}
         </div>
         <div id="tiers-{{ key }}" class="tiers speaker-tiers">
-          <div data-tier="or_transcript" class="tier active">{{ item.transcript }}
+          <div data-tier="or_transcript" class="tier active">{{ item.transcript }}{{ item.transcriptFull | raw }}
           </div>
         </div>
       </li>
