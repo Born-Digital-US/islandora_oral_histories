@@ -46,7 +46,10 @@
         </div>
         <div id="tiers-{{ key }}" class="tiers speaker-tiers">
           <div data-tier="or_transcript" class="tier active"><span class="tierLabels">Partial transcript: </span>
-          {{ item.transcript }}{{ item.transcriptFull|raw }}</div>
+          {{ item.transcript }}</div>
+          <div id="tiers-{{ key }}" class="tiers speaker-tiers">
+          <div data-tier="or_transcriptfull" class="tier active"><span class="tierLabels">Transcript: </span>
+          {{ item.transcriptFull|raw }}</div>
         </div>
         <div id="tiers-{{ key }}" class="tiers speaker-tiers">
           <div data-tier="or_annotation" class="tier active"><span class="tierLabels">Synopsis: </span>

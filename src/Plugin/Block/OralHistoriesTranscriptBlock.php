@@ -119,18 +119,20 @@ class OralHistoriesTranscriptBlock extends BlockBase implements ContainerFactory
           ],
         ],
       ];
+
       // Determine if there's any ['speaker'] values in the transcript_sections array.
-      $return['#has_speakers'] = FALSE;
-      foreach ($transcript_sections as $transcript_section) {
-        if (array_key_exists('speaker', $transcript_section) && !empty($transcript_section['speaker'])) {
-          $return['#has_speakers'] = TRUE;
-          break;
-        }
-      }
+      $return['#has_speakers'] = $this->transcriptContainsElement($transcript_sections, 'speaker');
     }
+
     return $return;
   }
 
+  /**
+   * Get the transcript media and parse it into an array of sections
+   *
+   * @return array
+   *   The parsed transcript sections
+   */
   public function getTranscriptSections() {
     if ($this->routeMatch->getParameter('node')) {
       $node = $this->routeMatch->getParameter('node');
@@ -351,4 +353,11 @@ class OralHistoriesTranscriptBlock extends BlockBase implements ContainerFactory
     return Cache::mergeContexts(parent::getCacheContexts(), ['route']);
   }
 
+  protected function transcriptContainsElement($transcript_sections, $element)  {
+    foreach ($transcript_sections as $transcript_section) {
+      if (array_key_exists($element, $transcript_section) && !empty($transcript_section['speaker'])) {
+        return TRUE;
+      }
+    }
+  }
 }
