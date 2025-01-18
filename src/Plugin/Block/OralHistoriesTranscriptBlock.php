@@ -4,14 +4,14 @@ namespace Drupal\islandora_oral_histories\Plugin\Block;
 
 use Drupal\Core\Block\BlockBase;
 use Drupal\Core\Cache\Cache;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Core\Link;
+use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
+use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Session\AccountProxy;
 use Drupal\Core\Url;
-use Drupal\Core\Link;
 use Drupal\file\Entity\File;
-use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
-use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Drupal\Core\Routing\RouteMatchInterface;
 
 /**
  * Provides an 'Oral Histories Transcript' Block.
@@ -56,7 +56,7 @@ class OralHistoriesTranscriptBlock extends BlockBase implements ContainerFactory
   protected $mediaSourceService;
 
   /**
-   * Constructor for About this Collection Block.
+   * Constructor for Oral Histories Transcript Block.
    *
    * @param array $configuration
    *   A configuration array containing information about the plugin instance.
@@ -104,63 +104,8 @@ class OralHistoriesTranscriptBlock extends BlockBase implements ContainerFactory
    * {@inheritdoc}
    */
   public function build() {
-    if ($this->routeMatch->getParameter('node')) {
-      $node = $this->routeMatch->getParameter('node');
-      $nid = (is_string($node) ? $node : $node->id());
-      if (is_string($node)) {
-        $node = $this->entityTypeManager->getStorage('node')->load($nid);
-      }
-    }
-    \Drupal::logger('islandora_oral_histories')->info("build with nid = " . $node->id());    
-    // The variable will be populated if there is a transcript.
-    $transcript_sections = [];
-    $user_roles = $this->currentUser->getRoles();
 
-    $transcript_term = $this->islandoraUtils->getTermForUri('http://pcdm.org/use#Transcript');
-    \Drupal::logger('islandora_oral_histories')->info("build with transcript_term = " . $transcript_term->id());    
-    $transcriptMedia = $this->entityTypeManager->getStorage('media')->loadByProperties([
-      'field_media_use' => ['target_id' => $transcript_term->id()],
-      'field_media_of' => ['target_id' => $nid],
-    ]);
-    // \Drupal::logger('islandora_oral_histories')->info("build with transcriptMedia = " . $transcriptMedia->id());    
-    if (count($transcriptMedia) > 0) {
-      $transcriptMedia = reset($transcriptMedia);
-      if ($transcriptMedia && $transcriptMedia->bundle() == 'file') {      
-        $media_file = $this->mediaSourceService->getSourceFile($transcriptMedia);
-        $target_id = $media_file->id();
-        $transcript = File::load($target_id);
-        $file_uri = $transcript->getFileUri();
-        \Drupal::logger('islandora_oral_histories')->info("build with file_uri = " . $file_uri);    
-        $drupal_file_uri = $file_uri; // str_replace("fedora://", \Drupal::request()->getSchemeAndHttpHost() . "/_flysystem/fedora/", $file_uri);
-        $file_contents = file_get_contents($drupal_file_uri);
-        $transcript_sections = $this->_parse_transcript_file($file_contents, $drupal_file_uri);
-      }
-    }
-    elseif ($node->hasField('field_model') && !$node->get('field_model')->isEmpty()) {
-      $model_term = $node->get('field_model')->referencedEntities()[0];
-      $model = $model_term->getName();
-      if ($model == 'Video' || $model == 'Audio') {
-        $media_use = $this->islandoraUtils->getTermForUri('http://pcdm.org/use#OriginalFile');
-        $av_Media = $this->entityTypeManager->getStorage('media')->loadByProperties([
-          'field_media_use' => ['target_id' => $media_use->id()],
-          'field_media_of' => ['target_id' => $nid],
-        ]);
-        if (count($av_Media) > 0) {
-          $av_Media = reset($av_Media);
-        }
-        // $av_Media is either an empty array or an object.
-        if (!empty($av_Media) && $av_Media->hasField('field_captions')) {
-          $field_captions = $av_Media->get('field_captions');
-          if (!is_null($av_Media->get('field_captions')->entity)) {
-            // get the uri that points to this media's field_captions file and pass
-            // this into the same parsing function as above. 
-            $drupal_file_uri = \Drupal::request()->getSchemeAndHttpHost() . $av_Media->get('field_captions')->entity->createFileUrl();
-            $file_contents = file_get_contents($drupal_file_uri, false);
-            $transcript_sections = $this->_parse_transcript_file($file_contents, $drupal_file_uri);
-          }
-        }
-      }
-    }
+    $transcript_sections = $this->getTranscriptSections();
 
     $return = [];
     if (count($transcript_sections) > 0) {
@@ -186,6 +131,68 @@ class OralHistoriesTranscriptBlock extends BlockBase implements ContainerFactory
     return $return;
   }
 
+  public function getTranscriptSections() {
+    if ($this->routeMatch->getParameter('node')) {
+      $node = $this->routeMatch->getParameter('node');
+      $nid = (is_string($node) ? $node : $node->id());
+      if (is_string($node)) {
+        $node = $this->entityTypeManager->getStorage('node')->load($nid);
+      }
+    }
+    \Drupal::logger('islandora_oral_histories')->info("build with nid = " . $node->id());
+    // The variable will be populated if there is a transcript.
+    $transcript_sections = [];
+    $user_roles = $this->currentUser->getRoles();
+
+    $transcript_term = $this->islandoraUtils->getTermForUri('http://pcdm.org/use#Transcript');
+    \Drupal::logger('islandora_oral_histories')->info("build with transcript_term = " . $transcript_term->id());
+    $transcriptMedia = $this->entityTypeManager->getStorage('media')->loadByProperties([
+      'field_media_use' => ['target_id' => $transcript_term->id()],
+      'field_media_of' => ['target_id' => $nid],
+    ]);
+    // \Drupal::logger('islandora_oral_histories')->info("build with transcriptMedia = " . $transcriptMedia->id());
+    if (count($transcriptMedia) > 0) {
+      $transcriptMedia = reset($transcriptMedia);
+      if ($transcriptMedia && $transcriptMedia->bundle() == 'file') {
+        $media_file = $this->mediaSourceService->getSourceFile($transcriptMedia);
+        $target_id = $media_file->id();
+        $transcript = File::load($target_id);
+        $file_uri = $transcript->getFileUri();
+        \Drupal::logger('islandora_oral_histories')->info("build with file_uri = " . $file_uri);
+        $drupal_file_uri = $file_uri; // str_replace("fedora://", \Drupal::request()->getSchemeAndHttpHost() . "/_flysystem/fedora/", $file_uri);
+        $file_contents = file_get_contents($drupal_file_uri);
+        $transcript_sections = $this->_parse_transcript_file($file_contents, $drupal_file_uri);
+      }
+    }
+    elseif ($node->hasField('field_model') && !$node->get('field_model')->isEmpty()) {
+      $model_term = $node->get('field_model')->referencedEntities()[0];
+      $model = $model_term->getName();
+      if ($model == 'Video' || $model == 'Audio') {
+        $media_use = $this->islandoraUtils->getTermForUri('http://pcdm.org/use#OriginalFile');
+        $av_Media = $this->entityTypeManager->getStorage('media')->loadByProperties([
+          'field_media_use' => ['target_id' => $media_use->id()],
+          'field_media_of' => ['target_id' => $nid],
+        ]);
+        if (count($av_Media) > 0) {
+          $av_Media = reset($av_Media);
+        }
+        // $av_Media is either an empty array or an object.
+        if (!empty($av_Media) && $av_Media->hasField('field_captions')) {
+          $field_captions = $av_Media->get('field_captions');
+          if (!is_null($av_Media->get('field_captions')->entity)) {
+            // get the uri that points to this media's field_captions file and pass
+            // this into the same parsing function as above.
+            $drupal_file_uri = \Drupal::request()->getSchemeAndHttpHost() . $av_Media->get('field_captions')->entity->createFileUrl();
+            $file_contents = file_get_contents($drupal_file_uri, false);
+            $transcript_sections = $this->_parse_transcript_file($file_contents, $drupal_file_uri);
+          }
+        }
+      }
+    }
+
+    return $transcript_sections;
+  }
+
   /*
    * This helper function will need to handle the transcript file based on the
    * file mime type or simply file extension. XML files are easiest to put into the
@@ -201,13 +208,13 @@ class OralHistoriesTranscriptBlock extends BlockBase implements ContainerFactory
       $transcript_sections = (is_array($transript_as_array) && array_key_exists('cue', $transript_as_array) ? $transript_as_array['cue'] : []);
     }
     elseif (strstr($drupal_file_uri, ".vtt")) {
-      // split apart at empty lines -- these are the sections then, iterate and each 
+      // split apart at empty lines -- these are the sections then, iterate and each
       // line is subsequently:
       //  section identifier
       //  time range separated by -->
       //  transcript line
       //  "WEBVTT
-      //  
+      //
       //  1
       //  00:00:04.600 --> 00:00:06.850
       //  Hi everyone. My name's Becca Baader and I'm
@@ -280,12 +287,12 @@ class OralHistoriesTranscriptBlock extends BlockBase implements ContainerFactory
       $transcript_sections[$key]['end'] = $seconds;
       $transcript_sections[$key]["end_h"] = $this->_seconds_to_time($seconds);
     }
-    return $transcript_sections;   
+    return $transcript_sections;
   }
 
   /*
    * Helper function to convert a time string into seconds.
-   * 
+   *
    * Expected value would look like: 00:00:06.850
    */
   function _strtotime($hh_mm_s) {
@@ -309,7 +316,7 @@ class OralHistoriesTranscriptBlock extends BlockBase implements ContainerFactory
     return ($hrs ? (int)$hrs . ':' : '') . (($mins > 9) ? $mins : '0' . $mins) .
       ":" . (($secs > 9) ? (int)$secs : '0' . $secs);
   }
-  
+
   /**
    * {@inheritdoc}
    */

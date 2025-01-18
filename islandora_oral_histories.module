@@ -28,6 +28,13 @@ function islandora_oral_histories_theme() {
         'attributes' => NULL
       ]
     ],
+    'oral_histories_annotated_transcript_block' => [
+      'template' => 'oral-histories-annotated-transcript-block',
+      'variables' => [
+        'transcript_content' => NULL,
+        'has_speakers' => FALSE,
+      ]
+    ],
     'oral_histories_transcript_block' => [
       'template' => 'oral-histories-transcript-block',
       'variables' => [
@@ -148,7 +155,7 @@ function islandora_oral_histories_entity_extra_field_info() {
     'weight' => 100,
     'visible' => TRUE,
   ];
-  return $extra_field; 
+  return $extra_field;
 }
 
 /**
