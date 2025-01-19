@@ -355,9 +355,11 @@ class OralHistoriesTranscriptBlock extends BlockBase implements ContainerFactory
 
   protected function transcriptContainsElement($transcript_sections, $element)  {
     foreach ($transcript_sections as $transcript_section) {
-      if (array_key_exists($element, $transcript_section) && !empty($transcript_section['speaker'])) {
+      if (array_key_exists($element, $transcript_section) && !empty($transcript_section[$element])) {
         return TRUE;
       }
     }
+    return FALSE;
   }
+
 }

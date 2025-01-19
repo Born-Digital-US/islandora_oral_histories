@@ -1,7 +1,7 @@
 <h5>Transcript</h5>
 {% set lastspeaker = '' %}
 <div class="tier-selector-processed navigation-processed">
-  {% if has_speakers is not empty %}
+   {% if has_speakers or has_tiers %}
     <div class="btn-group show-tick tier-selector">
       <button type="button" class="btn dropdown-toggle form-control selectpicker btn-default" title="Transcript, Speaker">
         <span class="filter-option pull-left">Transcript, Speaker</span>&nbsp;
@@ -10,16 +10,21 @@
       <div class="open dropdown-choices">
         <ul class="inner selectpicker" role="menu">
           <li data-optgroup="1">
-            <a class="opt show-transcript" title="Transcript">Transcript &nbsp;<i class="fa fa-check check-mark"></i></a>
+            <a class="opt show-transcript" role="checkbox" aria-checked=true title="Transcript">Transcript &nbsp;<i class="fa fa-check check-mark"></i></a>
           </li>
           <li class="divider" data-optgroup="2div"></li>
           <li>
-            <a class="opt show-speaker" title="Toggle speaker names on/off">Speaker &nbsp;<i class="fa fa-check check-mark"></i></a>
+            <a class="opt show-speaker" role="checkbox" aria-checked=true title="Toggle speaker names on/off">Speaker &nbsp;<i class="fa fa-check check-mark"></i></a>
           </li>
+          {% for tier_key, tier_label in tiers %}
+            <li>
+              <a class="opt show-speaker" role="checkbox" aria-checked=true title="Toggle {{ tier_label }} on/off">{{ tier_label }} &nbsp;<i class="fa fa-check check-mark"></i></a>
+            </li>
+          {% endfor %}
         </ul>
       </div>
     </div>
-  {% endif %}
+   {% endif %}
   <div class="btn-group" role="group">
     <button type="button" class="btn btn-default previous" title="Previous line"><i class="fa fa-arrow-left"></i> Prev</button>
     <button type="button" class="btn btn-default sameagain" title="Same line"><i class="fa fa-sync"></i> Same</button>
@@ -41,24 +46,11 @@
             {% set lastspeaker = item.speaker %}
           {% endif %}
         </div>
+        {% for tier_key, tier_label in tiers %}
         <div id="tiers-{{ key }}" class="tiers speaker-tiers">
-          <div data-tier="or_title" class="tier active">{{ item.title }}
-        </div>
-        <div id="tiers-{{ key }}" class="tiers speaker-tiers">
-          <div data-tier="or_transcript" class="tier active"><span class="tierLabels">Partial transcript: </span>
-          {{ item.transcript }}</div>
-          <div id="tiers-{{ key }}" class="tiers speaker-tiers">
-          <div data-tier="or_transcriptfull" class="tier active"><span class="tierLabels">Transcript: </span>
-          {{ item.transcriptFull|raw }}</div>
-        </div>
-        <div id="tiers-{{ key }}" class="tiers speaker-tiers">
-          <div data-tier="or_annotation" class="tier active"><span class="tierLabels">Synopsis: </span>
-          {{ item.annotation }}
-        </div>
-        <div id="tiers-{{ key }}" class="tiers speaker-tiers">
-          <div data-tier="or_keywords" class="tier active"><span class="tierLabels">Keywords: </span>
-          {{ item.keywords }}
-        </div>
+          <div data-tier="or_{{ tier_key }}" class="tier active"><span class="tierLabels">{{ tier_label }}: </span>
+          {{ attribute(item, tier_key) }}</div>
+        {% endfor %}
       </li>
     {% endfor %}
   </ul>
