@@ -4,21 +4,15 @@
    {% if has_speakers or has_tiers %}
     <div class="btn-group show-tick tier-selector">
       <button type="button" class="btn dropdown-toggle form-control selectpicker btn-default" title="Transcript, Speaker">
-        <span class="filter-option pull-left">Transcript, Speaker</span>&nbsp;
+        <span class="filter-option pull-left">Show / Hide</span>&nbsp;
         <span class="caret"></span>
       </button>
       <div class="open dropdown-choices">
         <ul class="inner selectpicker" role="menu">
-          <li data-optgroup="1">
-            <a class="opt show-transcript" role="checkbox" aria-checked=true title="Transcript">Transcript &nbsp;<i class="fa fa-check check-mark"></i></a>
-          </li>
-          <li class="divider" data-optgroup="2div"></li>
-          <li>
-            <a class="opt show-speaker" role="checkbox" aria-checked=true title="Toggle speaker names on/off">Speaker &nbsp;<i class="fa fa-check check-mark"></i></a>
-          </li>
+
           {% for tier_key, tier_label in tiers %}
             <li>
-              <a class="opt show-speaker" role="checkbox" aria-checked=true title="Toggle {{ tier_label }} on/off">{{ tier_label }} &nbsp;<i class="fa fa-check check-mark"></i></a>
+              <a class="opt show-{{ tier_key }}" role="checkbox" aria-checked=true title="Toggle {{ tier_label }} on/off">{{ tier_label }} &nbsp;<i class="fa fa-check check-mark"></i></a>
             </li>
           {% endfor %}
         </ul>
@@ -47,9 +41,10 @@
           {% endif %}
         </div>
         {% for tier_key, tier_label in tiers %}
-        <div id="tiers-{{ key }}" class="tiers speaker-tiers">
+        <div id="tiers-{{ key }}-{{ tier_key }}" class="tiers {{ tier_key }}-tiers">
           <div data-tier="or_{{ tier_key }}" class="tier active"><span class="tierLabels">{{ tier_label }}: </span>
           {{ attribute(item, tier_key) }}</div>
+          </div>
         {% endfor %}
       </li>
     {% endfor %}
