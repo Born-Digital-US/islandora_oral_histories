@@ -20,9 +20,9 @@
     </div>
    {% endif %}
   <div class="btn-group" role="group">
-    <button type="button" class="btn btn-default previous" title="Previous line"><i class="fa fa-arrow-left"></i> Prev</button>
-    <button type="button" class="btn btn-default sameagain" title="Same line"><i class="fa fa-sync"></i> Same</button>
-    <button type="button" class="btn btn-default next" title="Next line"><i class="fa fa-arrow-right"></i> Next</button>
+    <button type="button" class="btn btn-default oral-histories-top-button previous" title="Previous line"><i class="fa fa-arrow-left"></i> Prev</button>
+    <button type="button" class="btn btn-default oral-histories-top-button sameagain" title="Same line"><i class="fa fa-sync"></i> Same</button>
+    <button type="button" class="btn btn-default oral-histories-top-button next" title="Next line"><i class="fa fa-arrow-right"></i> Next</button>
   </div>
 </div>
 <div class="transcript-container scroller scrolling-transcript-processed">
@@ -49,7 +49,7 @@
         {% else %}
           <div id="tiers-{{ key }}-{{ tier_key }}" class="tiers {{ tier_key }}-tiers">
           <div data-tier="or_{{ tier_key }}" class="tier active"><span class="tier-label">{{ tier_label }}: </span>
-          {{ attribute(item, tier_key) }}</div>
+          <p class="transcript-section-text">{{ attribute(item, tier_key) | raw }}</p></div>
           </div>
           {% endif %}
         {% endfor %}
