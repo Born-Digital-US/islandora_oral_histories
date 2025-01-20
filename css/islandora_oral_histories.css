@@ -27,6 +27,9 @@ button.btn-default {
   overflow-x:auto;
   transition:all 100ms ease 0s;
 }
+
+
+
 .dropdown-choices ul {
   background: white;
   list-style: none;
@@ -40,6 +43,7 @@ button.btn-default {
   display:none;
   z-index: 100;
   border: 1px solid #bbb;
+  width: max-content;
 }
 
 .opendropdown-choices {
