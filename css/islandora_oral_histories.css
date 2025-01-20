@@ -28,6 +28,7 @@ button.btn-default {
   transition:all 100ms ease 0s;
 }
 .dropdown-choices ul {
+  background: white;
   list-style: none;
   line-height: 2.5em;
   margin-top: 0.75em;
@@ -39,4 +40,12 @@ button.btn-default {
   display:none;
   z-index: 100;
   border: 1px solid #bbb;
+}
+
+.opendropdown-choices {
+  width: 100px;
+}
+
+.tier-label {
+  font-weight: bold;
 }

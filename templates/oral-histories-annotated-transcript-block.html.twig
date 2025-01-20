@@ -41,10 +41,17 @@
           {% endif %}
         </div>
         {% for tier_key, tier_label in tiers %}
+        {% if tier_key == "title" %}
         <div id="tiers-{{ key }}-{{ tier_key }}" class="tiers {{ tier_key }}-tiers">
-          <div data-tier="or_{{ tier_key }}" class="tier active"><span class="tierLabels">{{ tier_label }}: </span>
+          <div data-tier="or_{{ tier_key }}" class="tier active">
+          <h4 class="transcript-section-title">{{ attribute(item, tier_key) }}</h4></div>
+          </div>
+        {% else %}
+          <div id="tiers-{{ key }}-{{ tier_key }}" class="tiers {{ tier_key }}-tiers">
+          <div data-tier="or_{{ tier_key }}" class="tier active"><span class="tier-label">{{ tier_label }}: </span>
           {{ attribute(item, tier_key) }}</div>
           </div>
+          {% endif %}
         {% endfor %}
       </li>
     {% endfor %}
