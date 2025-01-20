@@ -31,7 +31,6 @@ button.btn-default {
 
 
 .dropdown-choices ul {
-  background: white;
   list-style: none;
   line-height: 2.5em;
   margin-top: 0.75em;
@@ -42,12 +41,9 @@ button.btn-default {
   top: 2.4em;
   display:none;
   z-index: 100;
+  background-color: white;
   border: 1px solid #bbb;
   width: max-content;
-}
-
-.opendropdown-choices {
-  width: 100px;
 }
 
 .tier-label {
