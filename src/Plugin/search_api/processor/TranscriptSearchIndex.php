@@ -36,7 +36,7 @@ class TranscriptSearchIndex extends ProcessorPluginBase {
       $definition = [
         'label' => $this->t('Transcript for search index'),
         'description' => $this->t('Transcript media as text for search index'),
-        'type' => 'textfield',
+        'type' => 'search_api_text',
         'processor_id' => $this->getPluginId(),
       ];
       $properties['transcript'] = new ProcessorProperty($definition);
@@ -95,8 +95,10 @@ class TranscriptSearchIndex extends ProcessorPluginBase {
       $file_contents = file_get_contents($drupal_file_uri);
       $transcript_sections = $this->_parse_transcript_file($file_contents, $drupal_file_uri);
       foreach ($transcript_sections as $key => $line_arr) {
-        if (array_key_exists('transcript', $line_arr)) {
-          $transcript_file[] = strip_tags(trim($line_arr['transcript']));
+        foreach (['transcript', 'transcriptFull'] as $transcript_type_line) {
+          if (array_key_exists($transcript_type_line, $line_arr)) {
+            $transcript_file[] = strip_tags(trim($line_arr[$transcript_type_line]));
+          }
         }
       }
     }
@@ -184,7 +186,7 @@ class TranscriptSearchIndex extends ProcessorPluginBase {
       }
     }
     // Finished with the loop -- add the values from the final section if still need to be added.
-    if (count($transcript_lines) > 0) {
+    if (!empty($transcript_lines) && count($transcript_lines) > 0) {
       $transcript_sections[] = [
         'start' => $start, 'end' => $end, 'speaker' => $speaker, 'transcript' => implode(' ', $transcript_lines)
       ];
