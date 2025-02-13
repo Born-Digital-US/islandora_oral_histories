@@ -28,10 +28,10 @@ class OralHistoriesAnnotatedTranscriptBlock extends OralHistoriesTranscriptBlock
   public function build() {
 
     $all_tiers = [
-      'title' => $this->t('Title'),
-      'annotation' => $this->t('Synopsis'),
+      'title' => $this->t('Segment Title'),
       'transcript' => $this->t('Partial transcript'),
       'transcriptFull' => $this->t('Transcript'),
+      'annotation' => $this->t('Synopsis'),
       'keywords' => $this->t('Keywords'),
     ];
 
