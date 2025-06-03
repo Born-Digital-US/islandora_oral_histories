@@ -6,103 +6,118 @@
 
   Drupal.behaviors.islandora_oral_histories = {
     attach: function (context, settings) {
-      var audio = document.getElementsByTagName('audio')[0];
-      var video = document.getElementsByTagName('video')[0];
-      var media = '';
-      var playing_time = 0;
-      var last_from_to = '';
-      var last_button_id = '';
-      if (audio) {
-        media = audio;
-      }
-      if (video) {
-        media = video;
-      }
-      if (media) {
-        media.ontimeupdate = function () {
-          var play_time = Math.trunc(media.currentTime);
-          if (playing_time !== play_time) {
-            var time_li = $('[data-start="' + play_time + '"]');
-            if (time_li.length) {
-              playing_time = play_time;
+      const audio = document.getElementsByTagName('audio')[0];
+      const video = document.getElementsByTagName('video')[0];
+      let media = audio || video;
+      let playing_time = 0;
+      let last_from_to = '';
+      let last_button_id = '';
 
-              //  Highlight the row.
-              $(".transcript-container ul li").removeClass('playing');
-              time_li.addClass('playing');
+      if (!media) return;
 
-              // Scroll to the current line.
-              var index = time_li[0].id.split('_')[1];
-              var buttonHeight = time_li.outerHeight(true);
-              $(".scrolling-transcript-processed").scrollTop(index * buttonHeight);
+      // Preload media to reduce buffering delays.
+      media.preload = 'auto';
 
-              //  @todo Need to set this variable: last_button_id.
-              var button = time_li.find('button.play-tcu');
-              if (button.length) {
-                last_button_id = button[0].id;
-              }
-            }
-          }
+      // Cache all transcript segments on init.
+      const transcriptSegments = $('[data-start]').map(function () {
+        return {
+          time: parseFloat($(this).attr('data-start')),
+          el: $(this)
         };
+      }).get();
+
+      media.ontimeupdate = function () {
+        let play_time = media.currentTime;
+
+        let selected = null;
+
+        for (let i = 0; i < transcriptSegments.length; i++) {
+          let segment = transcriptSegments[i];
+          if (segment.time <= play_time) {
+            selected = segment;
+          } else {
+            break;
+          }
+        }
+
+        if (selected && !selected.el.hasClass('playing')) {
+          playing_time = Math.round(play_time);
+          let button = selected.el.find('button.play-tcu');
+
+          $(".transcript-container ul li").removeClass('playing');
+          selected.el.addClass('playing');
+
+          if (button.length) {
+            navigateToSegment(button, false);
+            last_button_id = button[0].id;
+          }
+        }
+      };
+
+
+      // Helper function for transcript segment navigation.
+      function navigateToSegment(button, setTime = true) {
+        if (!button.length) return;
+
+        playing_time = 0;
+        const self_id = button[0].id;
+        last_button_id = self_id;
+
+        if (setTime) {
+          const from_to = self_id.split("_");
+          media.currentTime = parseFloat(from_to[0]);
+          media.play();
+          last_from_to = from_to;
+        }
+
+        $(".transcript-container ul li").removeClass('playing');
+        const play_li = button.closest('li');
+        play_li.addClass('playing');
+
+        // Scroll to the new position
+        const transcriptContainer = $(".scrolling-transcript-processed");
+        const liOffset = play_li.offset().top;
+        const containerOffset = transcriptContainer.offset().top;
+        const scrollTo = liOffset - containerOffset + transcriptContainer.scrollTop();
+
+        transcriptContainer.stop().animate({
+          scrollTop: scrollTo
+        }, 200);
       }
+
       // Each section's play button.
       $(once('islandora_oral_histories-play', 'button.play-tcu')).click(function () {
-        playing_time = 0;
-        var self_id = this.id;
-        last_button_id = self_id;
-        var from_to = self_id.split("_");
-        media.currentTime = from_to[0];
-        media.play();
-        last_from_to = from_to;
-        $(".transcript-container ul li").removeClass('playing');
-        var play_li = $(this).parent('div').parent('div').parent('li');
-        play_li.addClass('playing');
-        var play_li_id = play_li[0].id;
-        play_li_id = play_li_id.replace('li_', '');
-        var li_selector = '.transcript-container ul li:nth-child(' + play_li_id + ')';
+        navigateToSegment($(this));
       });
+
       // Previous line play button.
       $(once('islandora_oral_histories-previous', 'button.previous')).click(function () {
         if (last_button_id) {
-          playing_time = 0;
-          var prev_button = $("#" + last_button_id).parent('div').parent('div').parent('li').prev('li').find('button.play-tcu');
-          if (prev_button.length) {
-            var self_id = prev_button[0].id;
-            last_button_id = self_id;
-            var from_to = self_id.split("_");
-            media.currentTime = from_to[0];
-            media.play();
-            last_from_to = from_to;
-          }
+          var prev_button = $("#" + last_button_id).closest('li').prev('li').find('button.play-tcu');
+          navigateToSegment(prev_button);
         }
       });
+
       // Next line play button.
       $(once('islandora_oral_histories-next', 'button.next')).click(function () {
         if (last_button_id) {
-          playing_time = 0;
-          var next_button = $("#" + last_button_id).parent('div').parent('div').parent('li').next('li').find('button.play-tcu');
-          if (next_button.length) {
-            var self_id = next_button[0].id;
-            last_button_id = self_id;
-            var from_to = self_id.split("_");
-            media.currentTime = from_to[0];
-            media.play();
-            last_from_to = from_to;
-          }
+          var next_button = $("#" + last_button_id).closest('li').next('li').find('button.play-tcu');
+          navigateToSegment(next_button);
         }
       });
+
       // Repeat same line button.
       $(once('islandora_oral_histories-same', 'button.sameagain')).click(function () {
         if (last_from_to) {
           playing_time = 0;
-          media.currentTime = last_from_to[0];
+          media.currentTime = parseFloat(last_from_to[0]);
           media.play();
         }
       });
+
       // Dropdown click.
       $(once('islandora_oral_histories-dropdown', 'button.dropdown-toggle')).click(function () {
-        // $(this).val() will work here
-        var showing = ($('div.tier-selector-processed .dropdown-choices').css('display') !== "none");
-        console.log(showing);
+        const showing = ($('div.tier-selector-processed .dropdown-choices').css('display') !== "none");
         if (showing) {
           $('div.tier-selector-processed .dropdown-choices').hide();
         }
@@ -110,9 +125,10 @@
           $('div.tier-selector-processed .dropdown-choices').show();
         }
       });
+
       // Show/hide speaker names click.
       $(once('islandora_oral_histories-speaker', '.show-speaker')).click(function () {
-        var checked = $(".show-speaker i").hasClass('fa-check');
+        const checked = $(".show-speaker i").hasClass('fa-check');
         if (checked) {
           $(".show-speaker i").removeClass('fa-check');
           $(".transcript-container .speaker-name").hide();
@@ -127,7 +143,7 @@
       for (const tier of ['title', 'transcript', 'transcriptFull', 'annotation', 'keywords']) {
         // Show/hide tiers click.
         $(once('islandora_oral_histories-' + tier, '.show-' + tier)).click(function () {
-          var checked = $(".show-" + tier + " i").hasClass('fa-check');
+          const checked = $(".show-" + tier + " i").hasClass('fa-check');
           if (checked) {
             $(".show-" + tier + " i").removeClass('fa-check');
             $(".show-" + tier).attr('aria-checked', false);
@@ -135,12 +151,12 @@
           }
           else {
             $(".show-" + tier + " i").addClass('fa-check');
-              $(".show-" + tier).attr('aria-checked', true);
-            $(".transcript-container ." +tier + "-tiers").show();
+            $(".show-" + tier).attr('aria-checked', true);
+            $(".transcript-container ." + tier + "-tiers").show();
           }
           $('div.tier-selector-processed .dropdown-choices').hide();
         });
       }
     }
-  }
+  };
 })(jQuery, Drupal, once);
