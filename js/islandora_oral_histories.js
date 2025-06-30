@@ -9,9 +9,6 @@
       const audio = document.getElementsByTagName('audio')[0];
       const video = document.getElementsByTagName('video')[0];
       let media = audio || video;
-      let playing_time = 0;
-      let last_from_to = '';
-      let last_button_id = '';
 
       if (!media) return;
 
@@ -25,6 +22,10 @@
           el: $(this)
         };
       }).get();
+
+      let playing_time = 0;
+      let last_button_id = transcriptSegments[0].el.find('button.play-tcu')[0].id;
+      let last_from_to = last_button_id.split("_");
 
       media.ontimeupdate = function () {
         let play_time = media.currentTime;
@@ -48,8 +49,8 @@
           selected.el.addClass('playing');
 
           if (button.length) {
-            navigateToSegment(button, false);
             last_button_id = button[0].id;
+            navigateToSegment(button, false);
           }
         }
       };
