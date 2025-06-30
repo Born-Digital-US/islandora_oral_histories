@@ -280,6 +280,12 @@ class OralHistoriesTranscriptBlock extends BlockBase implements ContainerFactory
         'start' => $start, 'end' => $end, 'speaker' => $speaker, 'transcript' => implode("\n", $transcript_lines)
       ];
     }
+
+    // Normalize into a nested array structure if there's only one 'cue' section.
+    if (!array_is_list($transcript_sections)) {
+      $transcript_sections = [$transcript_sections];
+    }
+
     // Finally iterate in order to convert the time to a human-readable format.
     foreach ($transcript_sections as $key => $transcript_section) {
       $seconds = array_key_exists('start', $transcript_section) ? floor($transcript_section['start']) : 0;
