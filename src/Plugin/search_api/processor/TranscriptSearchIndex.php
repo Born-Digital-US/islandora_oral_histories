@@ -193,8 +193,11 @@ class TranscriptSearchIndex extends ProcessorPluginBase {
     }
     // Finally iterate in order to convert the time to a human-readable format.
     foreach ($transcript_sections as $key => $transcript_section) {
-      $seconds = array_key_exists('start', $transcript_section) ? $transcript_section['start'] : 0;
-      $seconds = array_key_exists('end', $transcript_section) ? $transcript_section['end'] : 0;
+      // $seconds doesn't seem to be used?
+      if (is_array($transcript_section)) {
+        $seconds = array_key_exists('start', $transcript_section) ? $transcript_section['start'] : 0;
+        $seconds = array_key_exists('end', $transcript_section) ? $transcript_section['end'] : 0;
+      }
     }
     return $transcript_sections;
   }
