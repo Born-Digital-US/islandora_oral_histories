@@ -96,7 +96,7 @@ class TranscriptSearchIndex extends ProcessorPluginBase {
       $transcript_sections = $this->_parse_transcript_file($file_contents, $drupal_file_uri);
       foreach ($transcript_sections as $key => $line_arr) {
         foreach (['transcript', 'transcriptFull', 'title', 'annotation', 'keywords'] as $transcript_type_line) {
-          if (array_key_exists($transcript_type_line, $line_arr) && is_string($line_arr[$transcript_type_line])) {
+          if (is_array($line_arr) && array_key_exists($transcript_type_line, $line_arr) && is_string($line_arr[$transcript_type_line])) {
             $transcript_file[] = strip_tags(trim($line_arr[$transcript_type_line]));
           }
         }
