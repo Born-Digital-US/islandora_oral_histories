@@ -202,14 +202,14 @@ class OralHistoriesTranscriptBlock extends BlockBase implements ContainerFactory
    */
   function _parse_transcript_file($file_contents, $drupal_file_uri = '') {
     $transcript_sections = [];
-    if (strstr($drupal_file_uri, ".xml")) {
+    $xml = simplexml_load_string($file_contents, "SimpleXMLElement", LIBXML_NOCDATA);
+    if ($xml) {
       // XML file -- simple, load the file as simplexml and take appropriate 'cue' section.
-      $xml = simplexml_load_string($file_contents, "SimpleXMLElement", LIBXML_NOCDATA);
       $json = json_encode($xml);
       $transript_as_array = json_decode($json,TRUE);
       $transcript_sections = (is_array($transript_as_array) && array_key_exists('cue', $transript_as_array) ? $transript_as_array['cue'] : []);
     }
-    elseif (strstr($drupal_file_uri, ".vtt")) {
+    else {
       // split apart at empty lines -- these are the sections then, iterate and each
       // line is subsequently:
       //  section identifier
@@ -221,7 +221,7 @@ class OralHistoriesTranscriptBlock extends BlockBase implements ContainerFactory
       //  00:00:04.600 --> 00:00:06.850
       //  Hi everyone. My name's Becca Baader and I'm
       //
-      $start = $end = 0;
+      $start = $end = -1;
       $lines = explode("\n", $file_contents);
       $transcript_lines = [];
       $skipnext = FALSE;
@@ -232,7 +232,7 @@ class OralHistoriesTranscriptBlock extends BlockBase implements ContainerFactory
           if ($skipnext) {
             $skipnext = FALSE;
             $transcript_lines = [];
-            $start = $end = 0;
+            $start = $end = -1;
           }
           elseif ($line == '') {
             $skipnext = TRUE;
@@ -245,7 +245,7 @@ class OralHistoriesTranscriptBlock extends BlockBase implements ContainerFactory
               $end = $this->_strtotime($time_parts[1]);
             }
           }
-          elseif ($line && $start && $end) {
+          elseif ($line && $start >= 0 && $end >= 0) {
             $lbr = strpos($line, '<');
             $rbr = strpos($line, '>');
             if ($lbr < $rbr) {
@@ -264,7 +264,7 @@ class OralHistoriesTranscriptBlock extends BlockBase implements ContainerFactory
         }
         else {
           // blank line, add the values from the last section.
-          if ($start && $end && count($transcript_lines) > 0) {
+          if ($start >= 0 && $end >= 0 && count($transcript_lines) > 0) {
             $transcript_sections[] = [
               'start' => $start, 'end' => $end, 'speaker' => $speaker, 'transcript' => implode("\n", $transcript_lines)
             ];
