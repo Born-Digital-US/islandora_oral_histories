@@ -88,7 +88,7 @@ class OralHistoriesTranscriptBlock extends BlockBase implements ContainerFactory
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
-    return new static(
+    return new self(
       $configuration,
       $plugin_id,
       $plugin_definition,
@@ -222,6 +222,7 @@ class OralHistoriesTranscriptBlock extends BlockBase implements ContainerFactory
       //  Hi everyone. My name's Becca Baader and I'm
       //
       $start = $end = -1;
+      $speaker = '';
       $lines = explode("\n", $file_contents);
       $transcript_lines = [];
       $skipnext = FALSE;
